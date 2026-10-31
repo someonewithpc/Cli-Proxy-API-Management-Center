@@ -34,3 +34,7 @@ settings.local.json
 *.njsproj
 *.sln
 *.sw?
+
+# nix build
+result
+.direnv
