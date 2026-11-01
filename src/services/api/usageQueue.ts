@@ -278,3 +278,11 @@ export const usageQueueApi = {
     return buildCredentialDirectory(raw, files);
   },
 };
+
+/** The backend omits false booleans from `/config`, and the flag defaults to off. */
+export function isUsageStatisticsDisabled(raw: unknown): boolean {
+  if (!isRecord(raw) || Object.keys(raw).length === 0) return false;
+  const observability = raw.observability;
+  const usage = isRecord(observability) ? observability.usage : undefined;
+  return !isRecord(usage) || usage['usage-statistics-enabled'] !== true;
+}
