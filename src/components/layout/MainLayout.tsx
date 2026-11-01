@@ -49,6 +49,7 @@ import {
   type PluginResourceEntry,
 } from '@/features/plugins/pluginResources';
 import { APIKEY_FUN_DISPLAY_NAME, hasApiKeyFunConfig } from '@/features/providers/sponsor';
+import { useRequestsCollector } from '@/features/requests/collector';
 import { triggerHeaderRefresh } from '@/hooks/useHeaderRefresh';
 import { LANGUAGE_LABEL_KEYS, LANGUAGE_ORDER } from '@/utils/constants';
 import { isSupportedLanguage } from '@/utils/language';
@@ -311,6 +312,7 @@ const THEME_CARDS: Array<{
 
 export function MainLayout() {
   const { t } = useTranslation();
+  useRequestsCollector();
   const { showNotification } = useNotificationStore();
   const location = useLocation();
 
