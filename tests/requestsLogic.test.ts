@@ -162,7 +162,13 @@ describe('aggregates', () => {
   const traces = groupTraces([
     ...failover('f1', NOW - 4000, 100),
     ...failover('f2', NOW - 3000, 300),
-    attempt({ traceId: 'd1', timestamp: NOW - 2000, authIndex: 'work', latencyMs: 80 }),
+    attempt({
+      traceId: 'd1',
+      timestamp: NOW - 2000,
+      authIndex: 'work',
+      source: 'work@example.com',
+      latencyMs: 80,
+    }),
     attempt({ traceId: 'd2', requestedModel: 'gpt-5', authIndex: 'personal' }),
   ]);
 
@@ -174,13 +180,15 @@ describe('aggregates', () => {
     expect(claude.paths).toHaveLength(2);
     const [first, second] = claude.paths;
     expect(first.steps).toEqual([
-      { credential: 'api', ok: false, status: 400 },
-      { credential: 'work', ok: true, status: 200 },
+      { credential: 'api', source: 'sk-…aaaa', ok: false, status: 400 },
+      { credential: 'work', source: 'work@example.com', ok: true, status: 200 },
     ]);
     expect(first.count).toBe(2);
     expect(first.share).toBeCloseTo(2 / 3);
     expect(first.medianLatencyMs).toBe(210);
-    expect(second.steps).toEqual([{ credential: 'work', ok: true, status: 200 }]);
+    expect(second.steps).toEqual([
+      { credential: 'work', source: 'work@example.com', ok: true, status: 200 },
+    ]);
     expect(gpt.paths[0].share).toBe(1);
   });
 

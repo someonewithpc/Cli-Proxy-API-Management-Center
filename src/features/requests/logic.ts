@@ -145,6 +145,8 @@ export function median(values: readonly number[]): number {
 
 export interface PathStep {
   credential: string;
+  /** Masked source, for credentials the directory does not know. */
+  source: string;
   ok: boolean;
   status: number;
 }
@@ -169,6 +171,7 @@ export interface ModelPaths {
 export const traceSteps = (trace: RequestTrace): PathStep[] =>
   trace.attempts.map((attempt) => ({
     credential: credentialKey(attempt),
+    source: attempt.source,
     ok: !attempt.failed,
     status: attempt.statusCode,
   }));
@@ -226,6 +229,7 @@ export interface ReasonCount {
 
 export interface CredentialAggregate {
   credential: string;
+  source: string;
   attempts: number;
   served: number;
   failed: number;
@@ -263,6 +267,7 @@ export function aggregateCredentials(traces: readonly RequestTrace[]): Credentia
       const failures = attempts.filter((attempt) => attempt.failed);
       return {
         credential,
+        source: attempts[0].source,
         attempts: attempts.length,
         served: attempts.length - failures.length,
         failed: failures.length,
